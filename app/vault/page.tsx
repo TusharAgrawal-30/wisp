@@ -62,6 +62,7 @@ export default function VaultPage() {
         try {
           const res = await fetch(`/api/drop/${entry.id}/owner`, {
             headers: { 'x-destroy-token': entry.destroyToken },
+            cache: 'no-store',
           });
           if (!res.ok) throw new Error(res.status === 404 ? 'No trace of this drop on the server.' : 'fetch failed');
           const view: OwnerView = await res.json();

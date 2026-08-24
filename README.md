@@ -80,10 +80,22 @@ npm run build
 npm start
 ```
 
-Requires Node 22.13+ (uses the built-in `node:sqlite` — zero native dependencies). Data lives in
-`.data/` (override with `WISP_DATA_DIR`). On serverless hosts storage falls back to `/tmp`, which is
-fine for a demo but ephemeral — use a persistent disk, or swap `lib/store.ts` for Redis/Postgres; it's
-~200 lines and deliberately replaceable.
+Requires Node 22.13+ (uses the built-in `node:sqlite` — zero native dependencies).
+
+## Storage
+
+Two interchangeable backends behind `lib/store.ts`, picked at runtime:
+
+- **SQLite** (default) — zero config. Data lives in `.data/` (override with `WISP_DATA_DIR`).
+  Right for local dev and any host with a persistent disk.
+- **Upstash Redis** — used automatically when `UPSTASH_REDIS_REST_URL` and
+  `UPSTASH_REDIS_REST_TOKEN` are set. The right choice on serverless hosts (Vercel, etc.), where
+  instances don't share a filesystem. Talks to the Upstash REST API with plain fetch — no extra
+  dependency. Burn atomicity comes from Redis's atomic INCR, so the last read stays single-winner
+  even across separate serverless instances.
+
+To deploy on Vercel with persistent storage: create a free Redis database at upstash.com, copy the
+REST URL and token from its dashboard into the project's environment variables, and redeploy.
 
 ## Tests
 
@@ -96,6 +108,11 @@ npm test
 30 checks covering the crypto round trip, view-limit semantics, the 8-reader burn race, passwords,
 sealed replies (including replying to an already-burned drop), owner timeline auth, destroy tokens,
 file round trips, and input validation.
+
+The suite runs against whichever backend the server is using. To exercise the Redis path locally
+without an account, `node scripts/upstash-mock.mjs` starts an in-memory stand-in for the Upstash
+REST API; point the env vars at it (`UPSTASH_REDIS_REST_URL=http://localhost:8790`,
+`UPSTASH_REDIS_REST_TOKEN=test`) and start the server.
 
 ## Project layout
 
@@ -118,10 +135,14 @@ components/
   fx.tsx                 scramble/descramble text effects, entrance motion
 lib/
   crypto.ts              Web Crypto: AES-GCM + PBKDF2, base64url helpers
-  store.ts               SQLite: drops, events, replies, tombstones
+  store.ts               storage facade — picks a backend at runtime
+  store-sqlite.ts        SQLite backend: drops, events, replies, tombstones
+  store-redis.ts         Upstash Redis backend (REST, no dependency)
   server.ts              ids, hashing, rate limiter
   vault.ts               localStorage vault (client only)
   format.ts              relative time / countdown formatting
+scripts/
+  upstash-mock.mjs       in-memory Upstash stand-in for testing the redis path
 ```
 
 ## Design decisions

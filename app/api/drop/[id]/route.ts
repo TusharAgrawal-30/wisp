@@ -8,7 +8,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   if (!rateLimit(`read:${clientIp(req)}`, 120, 60 * 1000)) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   }
-  const drop = consumeDrop(params.id);
+  const drop = await consumeDrop(params.id);
   if (!drop) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 });
   }
@@ -20,7 +20,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   if (!token) {
     return NextResponse.json({ error: 'Missing destroy token.' }, { status: 401 });
   }
-  const ok = destroyDrop(params.id, sha256(token));
+  const ok = await destroyDrop(params.id, sha256(token));
   if (!ok) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 });
   }

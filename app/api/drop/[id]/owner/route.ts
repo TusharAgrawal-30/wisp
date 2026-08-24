@@ -16,9 +16,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   if (!token) {
     return NextResponse.json({ error: 'Missing token.' }, { status: 401 });
   }
-  const view = getOwnerView(params.id, sha256(token));
+  const view = await getOwnerView(params.id, sha256(token));
   if (!view) {
-    return NextResponse.json({ error: 'not_found' }, { status: 404 });
+    return NextResponse.json(
+      { error: 'not_found' },
+      { status: 404, headers: { 'Cache-Control': 'no-store' } }
+    );
   }
   return NextResponse.json(view, { headers: { 'Cache-Control': 'no-store' } });
 }

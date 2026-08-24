@@ -1,14 +1,14 @@
 {
   "name": "wisp",
-  "version": "0.1.0",
+  "version": "2.1.0",
   "private": true,
   "engines": {
     "node": ">=22.13"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 5000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 5000",
     "lint": "next lint",
     "test": "node e2e-test.mjs"
   },

@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   const id = randomId(8);
   const destroyToken = randomId(16);
 
-  insertDrop({
+  await insertDrop({
     id,
     blob,
     maxViews: maxViews === 0 ? null : maxViews,

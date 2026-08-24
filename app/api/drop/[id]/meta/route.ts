@@ -11,9 +11,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   if (!rateLimit(`meta:${clientIp(req)}`, 240, 60 * 1000)) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   }
-  const meta = getMeta(params.id);
+  const meta = await getMeta(params.id);
   if (!meta) {
-    return NextResponse.json({ error: 'not_found' }, { status: 404 });
+    return NextResponse.json(
+      { error: 'not_found' },
+      { status: 404, headers: { 'Cache-Control': 'no-store' } }
+    );
   }
   return NextResponse.json(meta, { headers: { 'Cache-Control': 'no-store' } });
 }

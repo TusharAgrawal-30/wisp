@@ -46,7 +46,7 @@ void main() {
   vec2 uv = gl_FragCoord.xy / u_res;
   vec2 asp = vec2(u_res.x / u_res.y, 1.0);
   vec2 p = uv * asp;
-  float t = u_time * 0.07;
+  float t = u_time * 0.09;
 
   // cursor influence: a soft swirl well around the pointer
   vec2 m = u_mouse * asp;
@@ -63,10 +63,10 @@ void main() {
   float f = fbm(p * 1.4 + r * 2.4 + swirl * 0.8);
 
   vec3 ink    = vec3(0.016, 0.018, 0.032);
-  vec3 dusk   = vec3(0.16, 0.13, 0.30);
-  vec3 slate  = vec3(0.10, 0.14, 0.26);
-  vec3 orchid = vec3(0.30, 0.17, 0.38);
-  vec3 mist   = vec3(0.30, 0.30, 0.44);
+  vec3 dusk   = vec3(0.24, 0.20, 0.46);
+  vec3 slate  = vec3(0.15, 0.20, 0.38);
+  vec3 orchid = vec3(0.42, 0.24, 0.55);
+  vec3 mist   = vec3(0.42, 0.42, 0.62);
 
   vec3 col = mix(ink, dusk, smoothstep(0.12, 0.72, f));
   col = mix(col, slate, smoothstep(0.3, 0.9, q.y * f * 1.8) * 0.85);
@@ -77,7 +77,7 @@ void main() {
   col += vec3(0.24, 0.20, 0.42) * well * 0.7;
 
   float vig = smoothstep(1.35, 0.35, length(uv - vec2(0.5, 0.45)));
-  col *= mix(0.7, 1.0, vig);
+  col *= mix(0.85, 1.05, vig);
   gl_FragColor = vec4(col, 1.0);
 }
 `;

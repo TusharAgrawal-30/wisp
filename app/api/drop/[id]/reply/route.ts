@@ -25,7 +25,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   if (blob.length > MAX_REPLY_BYTES) {
     return NextResponse.json({ error: 'Reply too large.' }, { status: 413 });
   }
-  const result = addReply(params.id, blob);
+  const result = await addReply(params.id, blob);
   if (result === 'not_found') return NextResponse.json({ error: 'not_found' }, { status: 404 });
   if (result === 'closed') return NextResponse.json({ error: 'Replies are closed for this drop.' }, { status: 403 });
   if (result === 'full') return NextResponse.json({ error: 'Reply limit reached.' }, { status: 429 });
