@@ -1,5 +1,7 @@
 # Wisp
 
+**Live:** https://wisp-ashy.vercel.app
+
 Dead drops for the web: share text and files through links that burn out after a set number of reads —
 and watch, live, as your secrets get read. The server can't read any of it.
 
@@ -70,7 +72,7 @@ silently burning a one-shot drop.
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+npm run dev        # http://localhost:5000
 ```
 
 Production:
